@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Nina Sport | Mi Progreso</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+/* === TU MISMO ESTILO (sin cambios) === */
+body{margin:0;font-family:'Segoe UI',sans-serif;background:#0f0f14;color:white;}
+header{background:linear-gradient(135deg,#ff4d8d,#ff9fc4);padding:20px;text-align:center;font-size:22px;font-weight:bold;}
+.menu{display:flex;justify-content:space-around;background:#16161d;padding:10px;}
+.menu a{color:white;text-decoration:none;font-weight:bold;}
+.container{ padding:15px; }
+.card{background:#1c1c25;padding:15px;border-radius:15px;box-shadow:0 0 10px rgba(255,77,141,0.3);margin-bottom:15px;}
+.card h2{ color:#ff77a8; margin-top:0; }
+.motivacion{text-align:center;font-size:18px;color:#ff9fc4;}
+.btn-pdf{width:100%;padding:12px;border:none;border-radius:12px;font-size:16px;font-weight:bold;background:linear-gradient(135deg,#ff4d8d,#ff9fc4);color:white;margin-top:15px;}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:6px;border-bottom:1px solid #333;text-align:center}
+th{background:#ff4d8d}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:15px;}
+.mini-card{background:#1c1c25;padding:12px;border-radius:14px;text-align:center;box-shadow:0 0 10px rgba(255,77,141,.25);}
+.mini-card h3{margin:0;font-size:14px;color:#ff9fc4;}
+.mini-card p{margin:6px 0 0;font-size:20px;font-weight:bold;}
+</style>
+</head>
+
+<body>
+
+<header id="bienvenida">💖 Nina Sport</header>
+
+<div class="menu">
+  <a href="cliente-dashboard.html">Dashboard</a>
+  <a href="cliente-rutina.html">Rutina</a>
+  <a href="#" onclick="logout()">Salir</a>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <h2>📏 Mi progreso corporal</h2>
+    <div id="tablaProgreso"></div>
+    <button class="btn-pdf" onclick="generarPDF()">📄 Descargar progreso en PDF</button>
+  </div>
+
+  <div class="card motivacion" id="frase"></div>
+
+</div>
+
+<script>
+
+/* ========= VERIFICAR SESIÓN ========= */
+async function init() {
+
+  const { data } = await supabaseClient.auth.getSession();
+
+  if (!data.session) {
+    location.href = "login.html";
+    return;
+  }
+
+  const user = data.session.user;
+
+  // Obtener perfil
+  const { data: perfil } = await supabaseClient
+    .from("perfiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (!perfil || perfil.rol !== "cliente") {
+    location.href = "login.html";
+    return;
+  }
+
+  document.getElementById("bienvenida").innerText =
+    "💖 Bienvenida, " + perfil.nombre;
+
+  cargarMedidas(user.id);
+}
+
+init();
+
+/* ========= CARGAR MEDIDAS DESDE SUPABASE ========= */
+async function cargarMedidas(userId) {
+
+  const { data: historial, error } = await supabaseClient
+    .from("medidas")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    document.getElementById("tablaProgreso").innerHTML =
+      "<p>Error cargando datos</p>";
+    return;
+  }
+
+  if (!historial || historial.length === 0) {
+    document.getElementById("tablaProgreso").innerHTML =
+      "<p style='text-align:center;color:#ff9fc4'>Aún no hay medidas 💖</p>";
+    return;
+  }
+
+  let html = `
+  <div style="overflow-x:auto">
+  <table>
+    <tr>
+      <th>Mes</th>
+      <th>Peso</th>
+      <th>Brazo</th>
+      <th>Pecho</th>
+      <th>Espalda</th>
+      <th>Cintura</th>
+      <th>Abdomen</th>
+      <th>Cadera</th>
+      <th>Pierna</th>
+      <th>Pantorrilla</th>
+      <th>Cuello</th>
+      <th>IMC</th>
+      <th>% Grasa</th>
+      <th>Magra</th>
+    </tr>`;
+
+  historial.forEach(m => {
+    html += `
+    <tr>
+      <td>${m.mes || "-"}</td>
+      <td>${m.peso || "-"}</td>
+      <td>${m.brazo || "-"}</td>
+      <td>${m.pecho || "-"}</td>
+      <td>${m.espalda || "-"}</td>
+      <td>${m.cintura || "-"}</td>
+      <td>${m.abdomen || "-"}</td>
+      <td>${m.cadera || "-"}</td>
+      <td>${m.pierna || "-"}</td>
+      <td>${m.pantorrilla || "-"}</td>
+      <td>${m.cuello || "-"}</td>
+      <td>${m.imc || "-"}</td>
+      <td>${m.grasa || "-"}</td>
+      <td>${m.musculo || "-"}</td>
+    </tr>`;
+  });
+
+  html += "</table></div>";
+
+  document.getElementById("tablaProgreso").innerHTML = html;
+}
+
+/* ========= FRASE ========= */
+const frases=[
+ "Hoy es un gran día para entrenar 💪",
+ "Cada repetición cuenta 🏋️‍♀️",
+ "Disciplina = resultados 🔥",
+ "Tu único rival es tu yo de ayer ✨",
+ "Estás construyendo tu mejor versión 💖"
+];
+document.getElementById("frase").innerText =
+  frases[Math.floor(Math.random()*frases.length)];
+
+/* ========= PDF ========= */
+function generarPDF(){
+  const tabla = document.getElementById("tablaProgreso").innerHTML;
+  const cont = document.createElement("div");
+  cont.style.padding="20px";
+  cont.style.color="#000";
+  cont.innerHTML = `
+    <div style="text-align:center">
+      <h1 style="color:#ff4d8d">Nina Sport</h1>
+      <hr>
+    </div>
+    ${tabla}
+  `;
+
+  html2pdf().from(cont).set({
+    margin:0.4,
+    filename:`NinaSport_Progreso.pdf`,
+    html2canvas:{scale:2},
+    jsPDF:{orientation:"landscape"}
+  }).save();
+}
+
+</script>
+
+</body>
+</html>

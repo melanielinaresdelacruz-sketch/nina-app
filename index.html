@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Nina Sport | Mi perfil</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff4d6d">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body class="cliente-body">
+
+<header class="header">
+  <img src="logo.png" class="logo">
+  <h1>Mi perfil</h1>
+  <p id="nombreCliente"></p>
+  <button onclick="logout()">Cerrar sesión</button>
+</header>
+
+<main class="cliente-main">
+
+<!-- PERFIL -->
+<section class="card">
+  <h2>👤 Mis datos</h2>
+  <div id="datosCliente"></div>
+</section>
+
+<!-- PROGRESO -->
+<section class="card">
+  <h2>📈 Mi progreso</h2>
+  <canvas id="graficaPeso"></canvas>
+  <div id="historial"></div>
+</section>
+
+<!-- RUTINA -->
+<section class="card">
+  <h2>📆 Mi rutina</h2>
+  <input type="month" id="mes">
+  <div id="rutinaCliente"></div>
+
+  <button class="btn-ok" onclick="marcarEntreno()">✅ Marcar día completado</button>
+  <p id="rachaTexto">🔥 Racha: 0 días</p>
+
+  <button onclick="exportarRutinaPDF()">📄 Descargar rutina PDF</button>
+</section>
+
+</main>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitulo"></h3>
+    <img id="modalImg">
+    <button onclick="cerrarModal()">Cerrar</button>
+  </div>
+</div>
+
+<!-- Protección -->
+<script src="js/auth.js"></script>
+<script>protegerPagina("cliente");</script>
+
+<!-- Cliente -->
+<script src="js/cliente.js"></script>
+<script src="js/cliente-rutina.js"></script>
+<script src="js/rachas.js"></script>
+<script src="js/pdf.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+</body>
+</html>

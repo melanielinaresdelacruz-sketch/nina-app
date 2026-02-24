@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nina Sport | Panel entrenador</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="cliente-body">
+
+<header class="header">
+  <img src="logo.png" class="logo">
+  <h1>Panel del entrenador</h1>
+</header>
+
+<section class="panel">
+
+<select id="clienteSelect"></select>
+<input type="month" id="mesInput">
+
+<div class="dia-panel" id="diasPanel"></div>
+
+<button onclick="guardarRutina()" class="btn-ok">💾 Guardar rutina</button>
+
+animaciones/sentadillas.gif
+
+</section>
+
+<script src="js/entrenador-rutinas.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+</body>
+</html>

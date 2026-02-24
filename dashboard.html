@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Nina Sport | Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- SUPABASE v2 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://mbllpmydlewmdzcnxpcq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_SQ--Ml1E"; // tu publishable key
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:#0f0f14;
+  color:white;
+}
+
+header{
+  background:linear-gradient(135deg,#ff4d8d,#ff9fc4);
+  padding:20px;
+  text-align:center;
+  font-size:24px;
+  font-weight:bold;
+}
+
+.menu{
+  display:flex;
+  justify-content:space-around;
+  background:#16161d;
+  padding:10px;
+}
+
+.menu a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.container{
+  padding:15px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;
+}
+
+.card{
+  background:#1c1c25;
+  padding:15px;
+  border-radius:15px;
+  box-shadow:0 0 10px rgba(255,77,141,0.3);
+  text-align:center;
+}
+
+.card h2{
+  color:#ff77a8;
+  margin:5px 0;
+}
+
+.section{
+  margin-top:25px;
+  background:#1c1c25;
+  padding:15px;
+  border-radius:15px;
+  box-shadow:0 0 10px rgba(255,77,141,0.3);
+}
+
+canvas{
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>💖 NINA SPORT · DASHBOARD</header>
+
+<div class="menu">
+  <a href="admin.html">Clientes</a>
+  <a href="admin-medidas.html">Medidas</a>
+  <a href="admin-rutinas.html">Rutinas</a>
+  <a href="dashboard.html">Dashboard</a>
+</div>
+
+<div class="container">
+
+  <div class="cards">
+    <div class="card">
+      <h3>👥 Clientes</h3>
+      <h2 id="totalClientes">0</h2>
+    </div>
+
+    <div class="card">
+      <h3>🔥 Racha total</h3>
+      <h2 id="totalRacha">0</h2>
+    </div>
+
+    <div class="card">
+      <h3>📅 Activos hoy</h3>
+      <h2 id="activosHoy">0</h2>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>📈 Progreso promedio (peso)</h3>
+    <canvas id="pesoChart"></canvas>
+  </div>
+
+  <div class="section">
+    <h3>🔥 Rachas de clientes</h3>
+    <canvas id="rachaChart"></canvas>
+  </div>
+
+  <div class="section">
+    <h3>🆕 Últimos clientes</h3>
+    <ul id="listaClientes"></ul>
+  </div>
+
+</div>
+
+<script>
+
+/* ===============================
+   NUEVA SEGURIDAD SUPABASE
+================================ */
+
+async function verificarSesion(){
+
+  try{
+
+    const { data, error } = await supabase.auth.getSession();
+
+    if(error || !data.session){
+      location.href = "login.html";
+      return;
+    }
+
+    const user = data.session.user;
+
+    const { data: perfil, error: perfilError } = await supabase
+      .from("perfiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    if(perfilError || !perfil){
+      location.href = "login.html";
+      return;
+    }
+
+    if(perfil.rol !== "admin"){
+      location.href = "cliente-dashboard.html";
+      return;
+    }
+
+    localStorage.setItem("usuarioActivo", JSON.stringify(perfil));
+
+    cargarDashboard();
+
+  }
+  catch(err){
+
+    console.error("ERROR SESION:", err);
+    location.href = "login.html";
+
+  }
+
+}
+
+
+/* ===============================
+   CARGAR DASHBOARD
+================================ */
+
+function cargarDashboard(){
+
+  function getUsuarios(){
+    return JSON.parse(localStorage.getItem("usuarios")) || [];
+  }
+
+  const usuarios = getUsuarios().filter(u=>u.rol==="cliente");
+
+
+  /* TARJETAS */
+
+  document.getElementById("totalClientes").innerText = usuarios.length;
+
+  let totalRacha = 0;
+  let activosHoy = 0;
+
+  const hoy = new Date().toDateString();
+
+  usuarios.forEach(u=>{
+
+    if(u.racha?.dias)
+      totalRacha += u.racha.dias;
+
+    if(u.racha?.ultima === hoy)
+      activosHoy++;
+
+  });
+
+  document.getElementById("totalRacha").innerText = totalRacha;
+  document.getElementById("activosHoy").innerText = activosHoy;
+
+
+  /* LISTA CLIENTES */
+
+  const lista = document.getElementById("listaClientes");
+  lista.innerHTML = "";
+
+  usuarios.slice(-5).reverse().forEach(u=>{
+
+    const li = document.createElement("li");
+    li.innerText = "👤 " + u.nombre + " (" + u.user + ")";
+
+    lista.appendChild(li);
+
+  });
+
+
+  /* GRAFICA PESO */
+
+  let meses = {};
+  let labels = [];
+  let promedios = [];
+
+  usuarios.forEach(u=>{
+
+    const key = "medidas_" + u.user;
+
+    const historial = JSON.parse(localStorage.getItem(key)) || [];
+
+    historial.forEach(m=>{
+
+      if(!meses[m.mes])
+        meses[m.mes] = [];
+
+      meses[m.mes].push(Number(m.peso));
+
+    });
+
+  });
+
+
+  for(let mes in meses){
+
+    labels.push(mes);
+
+    const suma = meses[mes].reduce((a,b)=>a+b,0);
+
+    promedios.push((suma/meses[mes].length).toFixed(1));
+
+  }
+
+
+  new Chart(document.getElementById("pesoChart"),{
+
+    type:"line",
+
+    data:{
+
+      labels,
+
+      datasets:[{
+
+        label:"Peso promedio",
+
+        data:promedios,
+
+        tension:0.4,
+
+        fill:true,
+
+        borderWidth:2
+
+      }]
+
+    }
+
+  });
+
+
+  /* GRAFICA RACHAS */
+
+  new Chart(document.getElementById("rachaChart"),{
+
+    type:"bar",
+
+    data:{
+
+      labels: usuarios.map(u=>u.nombre),
+
+      datasets:[{
+
+        label:"Días de racha",
+
+        data: usuarios.map(u=>u.racha?.dias || 0),
+
+        borderWidth:1
+
+      }]
+
+    }
+
+  });
+
+}
+
+
+/* INICIAR */
+<script src="js/auth.js"></script>
+
+<script>
+verificarSesion();
+</script>
+
+</body>
+</html>

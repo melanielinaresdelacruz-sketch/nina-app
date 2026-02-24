@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Nina Sport</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff4d6d">
+</head>
+
+<body class="login">
+
+  <div class="login-box">
+
+    <img src="assets/logo-192.png" class="logo-login">
+
+    <h2>Iniciar sesión</h2>
+
+    <!-- IMPORTANTE: type=email -->
+    <input id="usuario" type="email" placeholder="Correo electrónico">
+
+    <input id="password" type="password" placeholder="Contraseña">
+
+    <!-- SIN onclick -->
+    <button id="btnLogin">Entrar</button>
+
+    <p id="error" class="error"></p>
+
+  </div>
+
+
+  <!-- SUPABASE CDN (ESTE CREA window.supabase) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- TU CLIENTE -->
+  <script src="js/supabase.js"></script>
+
+  <!-- TU AUTH -->
+  <script src="js/auth.js"></script>
+
+
+  <!-- LIMPIAR CLIENTE -->
+  <script>
+    localStorage.removeItem("clienteActual");
+    localStorage.removeItem("clienteRutina");
+  </script>
+
+
+  <!-- RESET APP -->
+  <script>
+    function resetApp(){
+      if(confirm("Esto borrará todos los datos guardados. ¿Seguro?")){
+        localStorage.clear();
+        caches.keys().then(names => names.forEach(n => caches.delete(n)));
+        alert("App limpia ✅");
+        location.reload();
+      }
+    }
+  </script>
+
+
+</body>
+</html>

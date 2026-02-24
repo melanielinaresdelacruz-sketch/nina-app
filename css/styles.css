@@ -1,0 +1,206 @@
+* {
+  box-sizing: border-box;
+  font-family: "Poppins", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #fff6f8;
+  color: #444;
+}
+
+/* HEADER */
+
+header {
+  background: linear-gradient(135deg, #ff4d6d, #ff758f);
+  color: white;
+  padding: 18px;
+  text-align: center;
+  border-radius: 0 0 25px 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+header p {
+  margin: 5px 0 10px;
+  opacity: .9;
+}
+
+/* BOTONES */
+
+button {
+  background: #ff4d6d;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 18px;
+  margin: 5px 3px;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+}
+
+button:hover {
+  background: #ff2f57;
+}
+
+/* CARDS */
+
+.card {
+  background: white;
+  border-radius: 22px;
+  padding: 15px;
+  margin: 12px;
+  box-shadow: 0 6px 14px rgba(0,0,0,.08);
+}
+
+.card h2 {
+  margin-top: 0;
+  color: #ff4d6d;
+}
+
+/* INPUTS */
+
+input, select, textarea {
+  width: 100%;
+  margin: 6px 0;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid #ffd1db;
+  font-size: 14px;
+}
+
+textarea {
+  resize: none;
+  min-height: 60px;
+}
+
+/* GRID GENERAL */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 10px;
+}
+
+/* GRID MEDIDAS */
+
+.grid-medidas {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* EJERCICIOS */
+
+.ejercicio {
+  background: #fff0f4;
+  padding: 10px;
+  border-radius: 15px;
+  margin-bottom: 6px;
+}
+
+/* LOGIN */
+
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-box {
+  background: white;
+  padding: 25px;
+  width: 90%;
+  max-width: 320px;
+  border-radius: 25px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+  text-align: center;
+}
+
+.login-box h2 {
+  color: #ff4d6d;
+}
+
+.error {
+  color: crimson;
+  font-size: 14px;
+}
+
+/* NAV */
+
+nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #ffd1db;
+  padding: 6px 0;
+}
+
+nav button {
+  box-shadow: none;
+  font-size: 13px;
+}
+
+/* =========================
+   TARJETAS FITNESS (NUEVO)
+========================= */
+
+.cards-fisicas{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
+  gap:12px;
+  margin:12px 0;
+}
+
+.card-fisica{
+  background: linear-gradient(135deg,#ff4d8d,#ff7aa2);
+  border-radius:18px;
+  padding:14px;
+  color:white;
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+  transition:.3s;
+}
+
+.card-fisica h4{
+  margin:0;
+  font-size:13px;
+  opacity:.9;
+}
+
+.card-fisica .valor{
+  font-size:26px;
+  font-weight:800;
+  margin:4px 0;
+}
+
+.card-fisica .detalle{
+  font-size:12px;
+  opacity:.9;
+}
+
+.card-fisica.subir{
+  background: linear-gradient(135deg,#ff4d4d,#ff8f8f);
+}
+
+.card-fisica.bajar{
+  background: linear-gradient(135deg,#2ecc71,#6dffb2);
+}
+
+.card-fisica.neutro{
+  background: linear-gradient(135deg,#f1c40f,#ffe28a);
+  color:#5a4a00;
+}
+
+.card-fisica.musculo{
+  background: linear-gradient(135deg,#4da6ff,#7cc2ff);
+}

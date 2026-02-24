@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nina Sport | Mi rutina</title>
+
+<link rel="stylesheet" href="css/styles.css">
+<meta name="theme-color" content="#ff4d6d">
+</head>
+
+<body class="cliente-body">
+
+<header class="header">
+  <h1>💖 Mi rutina</h1>
+  <p id="rachaTexto">🔥 Racha: 0 días</p>
+</header>
+
+<main class="cliente-main">
+
+<!-- ======================
+     SEMANA ACTIVA
+====================== -->
+<section class="card">
+  <p id="textoSemana" style="font-weight:bold;"></p>
+</section>
+
+<!-- ======================
+     RUTINA
+====================== -->
+<section class="card">
+  <div id="rutinaCliente"></div>
+
+  <button class="btn-principal" onclick="exportarRutinaPDF()">
+    📄 Descargar PDF (Semana)
+  </button>
+</section>
+
+</main>
+
+<!-- ======================
+     MODAL
+====================== -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitulo"></h3>
+    <img id="modalImg">
+    <button onclick="cerrarModal()">Cerrar</button>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script>protegerPagina(['cliente']);</script>
+<script src="js/cliente-rutina.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</body>
+</html>

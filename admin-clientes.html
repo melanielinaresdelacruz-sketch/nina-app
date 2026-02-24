@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nina Sport | Clientes</title>
+
+<link rel="stylesheet" href="css/styles.css">
+<meta name="theme-color" content="#ff4d6d">
+</head>
+
+<body>
+
+<header class="header">
+  <h1>👥 Nina Sport</h1>
+  <p>Gestión de clientas</p>
+  <button onclick="location.href='admin.html'">⬅ Volver</button>
+</header>
+
+<main>
+
+<section class="card">
+  <h2>➕ Crear clienta</h2>
+  <input id="nombre" placeholder="Nombre completo">
+  <input id="usuario" placeholder="Usuario">
+  <input id="password" type="password" placeholder="Contraseña">
+  <button onclick="registrar()">Crear clienta</button>
+  <p id="msg"></p>
+</section>
+
+<section class="card">
+  <h2>💖 Clientas registradas</h2>
+  <div id="listaClientes"></div>
+</section>
+
+</main>
+
+<script src="js/auth.js"></script>
+<script>protegerPagina(['admin']);</script>
+<script src="js/clientes.js"></script>
+
+</body>
+</html>

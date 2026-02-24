@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nina Sport | Perfil del cliente</title>
+
+<link rel="stylesheet" href="css/styles.css">
+<meta name="theme-color" content="#ff4d6d">
+</head>
+
+<body class="cliente-body">
+
+<header class="header">
+  <img src="logo.png" class="logo">
+  <h1>📋 Perfil del cliente</h1>
+  <h2 id="nombreCliente"></h2>
+</header>
+
+<h3 style="text-align:center;color:#d4af37">
+  Entrenando resultados, creando disciplina 💪✨
+</h3>
+
+<main class="cliente-main">
+
+<!-- ================= PROGRESO ================= -->
+
+<section class="card">
+  <h3>📈 Progreso corporal</h3>
+
+  <div class="resultados">
+    <p>📌 <b>IMC:</b> <span id="imc">--</span></p>
+    <p>🔥 <b>% Grasa corporal:</b> <span id="grasa">--</span></p>
+  </div>
+
+  <h4>📊 Evolución de medidas</h4>
+  <canvas id="graficaMedidas"></canvas>
+
+  <h4>📉 Cambios este mes</h4>
+  <p id="comparacion" style="margin-top:5px;font-weight:bold;"></p>
+</section>
+
+<!-- ================= HISTORIAL ================= -->
+
+<section class="card">
+  <h3>🕒 Historial de medidas</h3>
+  <div id="historial"></div>
+</section>
+
+<!-- ================= RUTINA ================= -->
+
+<section class="card">
+  <h3>🗓️ Rutina</h3>
+  <p>Consulta tu rutina semanal asignada por tu entrenador</p>
+  <button class="btn-ok" onclick="irRutina()">Ver rutina</button>
+</section>
+
+<button class="btn-ok" onclick="exportarProgresoPDF()">📄 Descargar progreso en PDF</button>
+
+</main>
+
+<!-- ================= LIBRERÍAS ================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- ================= AUTH ================= -->
+
+<script src="js/auth.js"></script>
+<script>
+  protegerPagina(["admin","cliente"]);
+</script>
+
+<!-- ================= LÓGICA ================= -->
+
+<script src="js/cliente.js"></script>
+<script src="js/rutina-cliente.js"></script>
+
+<!-- ================= SERVICE WORKER ================= -->
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nina Sport | Panel Entrenadora</title>
+
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="theme-color" content="#ff4d6d">
+</head>
+
+<body>
+
+<header>
+  <h1>💖 Nina Sport</h1>
+  <p>Panel de entrenadora</p>
+  <button onclick="logout()">Cerrar sesión</button>
+</header>
+
+<main>
+
+<!-- DASHBOARD -->
+<section class="card">
+  <h2>📊 Dashboard</h2>
+  <canvas id="graficaUsuarios"></canvas>
+</section>
+
+<section class="card">
+  <h2>📈 Progreso general</h2>
+  <canvas id="graficaProgreso"></canvas>
+</section>
+
+<!-- ACCESOS -->
+<section class="card">
+  <h2>⚙️ Administración</h2>
+  <button onclick="location.href='admin-clientes.html'">👥 Clientes</button>
+  <button onclick="location.href='admin-medidas.html'">📏 Medidas</button>
+  <button onclick="location.href='admin-rutinas.html'">🏋️ Rutinas</button>
+</section>
+
+</main>
+
+<script src="js/auth.js"></script>
+<script>protegerPagina('admin');</script>
+<script src="js/dashboard.js"></script>
+
+</body>
+</html>

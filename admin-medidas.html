@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nina Sport | Medidas</title>
+
+<link rel="stylesheet" href="css/styles.css">
+<meta name="theme-color" content="#ff4d6d">
+</head>
+
+<body>
+
+<header class="header">
+  <h1>📏 Nina Sport</h1>
+  <p>Medidas corporales</p>
+  <button onclick="location.href='admin-clientes.html'">⬅ Volver</button>
+</header>
+
+<main>
+
+<section class="card">
+  <h2>📋 Registrar medidas</h2>
+
+  <p id="nombreCliente"></p>
+
+  <!-- TARJETAS VISUALES -->
+  <div id="cardsFisicas" class="cards-fisicas"></div>
+
+  <input type="month" id="mes">
+  <input id="edad" type="number" placeholder="Edad (años)">
+
+  <div class="grid-medidas">
+    <input id="peso" type="number" placeholder="Peso (kg)">
+    <input id="estatura" type="number" placeholder="Estatura (cm)">
+    <input id="cuello" type="number" placeholder="Cuello (cm)">
+    <input id="brazo" type="number" placeholder="Brazo (cm)">
+    <input id="pecho" type="number" placeholder="Pecho (cm)">
+    <input id="espalda" type="number" placeholder="Espalda (cm)">
+    <input id="cintura" type="number" placeholder="Cintura (cm)">
+    <input id="abdomen" type="number" placeholder="Abdomen (cm)">
+    <input id="cadera" type="number" placeholder="Cadera (cm)">
+    <input id="pierna" type="number" placeholder="Pierna (cm)">
+    <input id="pantorrilla" type="number" placeholder="Pantorrilla (cm)">
+  </div>
+
+  <button onclick="guardarMedidas()">💾 Guardar mes</button>
+</section>
+
+<section class="card">
+  <h2>📊 Progreso comparativo</h2>
+  <div id="tablaProgreso"></div>
+</section>
+
+<section class="card">
+  <h2>🕒 Historial</h2>
+  <div id="historial"></div>
+</section>
+
+</main>
+
+<script src="js/auth.js"></script>
+<script>protegerPagina(['admin']);</script>
+<script src="js/admin-medidas.js"></script>
+
+</body>
+</html>
