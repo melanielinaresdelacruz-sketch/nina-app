@@ -7,13 +7,18 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- SUPABASE v2 -->
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://mbllpmydlewmdzcnxpcq.supabase.co";
-const SUPABASE_KEY = "sb_publishable_SQ--Ml1E"; // tu publishable key
+const SUPABASE_KEY = "sb_publishable_SQ--Ml1E";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+window.supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+console.log("SUPABASE CLIENT OK");
 </script>
 
 <style>
@@ -91,11 +96,13 @@ canvas{
   <a href="admin-medidas.html">Medidas</a>
   <a href="admin-rutinas.html">Rutinas</a>
   <a href="dashboard.html">Dashboard</a>
+  <a href="#" onclick="logout()">Salir</a>
 </div>
 
 <div class="container">
 
   <div class="cards">
+
     <div class="card">
       <h3>👥 Clientes</h3>
       <h2 id="totalClientes">0</h2>
@@ -110,15 +117,16 @@ canvas{
       <h3>📅 Activos hoy</h3>
       <h2 id="activosHoy">0</h2>
     </div>
+
   </div>
 
   <div class="section">
-    <h3>📈 Progreso promedio (peso)</h3>
+    <h3>📈 Progreso promedio</h3>
     <canvas id="pesoChart"></canvas>
   </div>
 
   <div class="section">
-    <h3>🔥 Rachas de clientes</h3>
+    <h3>🔥 Rachas</h3>
     <canvas id="rachaChart"></canvas>
   </div>
 
@@ -129,140 +137,113 @@ canvas{
 
 </div>
 
+
+<script src="js/auth.js"></script>
+
 <script>
 
-/* ===============================
-   NUEVA SEGURIDAD SUPABASE
-================================ */
+/**********************
+VERIFICAR SESION
+**********************/
+async function verificarSesionDashboard(){
 
-async function verificarSesion(){
+  const client = window.supabaseClient;
 
-  try{
-
-    const { data, error } = await supabase.auth.getSession();
-
-    if(error || !data.session){
-      location.href = "login.html";
-      return;
-    }
-
-    const user = data.session.user;
-
-    const { data: perfil, error: perfilError } = await supabase
-      .from("perfiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
-
-    if(perfilError || !perfil){
-      location.href = "login.html";
-      return;
-    }
-
-    if(perfil.rol !== "admin"){
-      location.href = "cliente-dashboard.html";
-      return;
-    }
-
-    localStorage.setItem("usuarioActivo", JSON.stringify(perfil));
-
-    cargarDashboard();
-
-  }
-  catch(err){
-
-    console.error("ERROR SESION:", err);
-    location.href = "login.html";
-
+  if(!client){
+    location.href="login.html";
+    return;
   }
 
+  const { data } = await client.auth.getSession();
+
+  if(!data.session){
+    location.href="login.html";
+    return;
+  }
+
+  const user = data.session.user;
+
+  const { data: perfil } = await client
+  .from("perfiles")
+  .select("*")
+  .eq("id", user.id)
+  .single();
+
+  if(!perfil){
+    location.href="login.html";
+    return;
+  }
+
+  if(perfil.rol !== "admin"){
+    location.href="cliente-dashboard.html";
+    return;
+  }
+
+  console.log("ADMIN OK");
+
+  cargarDashboard();
 }
 
 
-/* ===============================
-   CARGAR DASHBOARD
-================================ */
-
+/**********************
+CARGAR DASHBOARD
+**********************/
 function cargarDashboard(){
 
-  function getUsuarios(){
-    return JSON.parse(localStorage.getItem("usuarios")) || [];
-  }
+  const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
 
-  const usuarios = getUsuarios().filter(u=>u.rol==="cliente");
+  const clientes = usuarios.filter(u=>u.rol==="cliente");
 
+  document.getElementById("totalClientes").textContent = clientes.length;
 
-  /* TARJETAS */
+  let totalRacha=0;
+  let activosHoy=0;
 
-  document.getElementById("totalClientes").innerText = usuarios.length;
+  const hoy=new Date().toDateString();
 
-  let totalRacha = 0;
-  let activosHoy = 0;
-
-  const hoy = new Date().toDateString();
-
-  usuarios.forEach(u=>{
+  clientes.forEach(u=>{
 
     if(u.racha?.dias)
-      totalRacha += u.racha.dias;
+      totalRacha+=u.racha.dias;
 
-    if(u.racha?.ultima === hoy)
+    if(u.racha?.ultima===hoy)
       activosHoy++;
 
   });
 
-  document.getElementById("totalRacha").innerText = totalRacha;
-  document.getElementById("activosHoy").innerText = activosHoy;
+  document.getElementById("totalRacha").textContent=totalRacha;
+  document.getElementById("activosHoy").textContent=activosHoy;
 
 
-  /* LISTA CLIENTES */
+  /* LISTA */
+  const lista=document.getElementById("listaClientes");
+  lista.innerHTML="";
 
-  const lista = document.getElementById("listaClientes");
-  lista.innerHTML = "";
+  clientes.slice(-5).reverse().forEach(u=>{
 
-  usuarios.slice(-5).reverse().forEach(u=>{
-
-    const li = document.createElement("li");
-    li.innerText = "👤 " + u.nombre + " (" + u.user + ")";
-
+    const li=document.createElement("li");
+    li.textContent="👤 "+u.nombre;
     lista.appendChild(li);
 
   });
 
 
   /* GRAFICA PESO */
+  const labels=[];
+  const dataPeso=[];
 
-  let meses = {};
-  let labels = [];
-  let promedios = [];
+  clientes.forEach(u=>{
 
-  usuarios.forEach(u=>{
-
-    const key = "medidas_" + u.user;
-
-    const historial = JSON.parse(localStorage.getItem(key)) || [];
+    const historial=JSON.parse(localStorage.getItem("medidas_"+u.user))||[];
 
     historial.forEach(m=>{
 
-      if(!meses[m.mes])
-        meses[m.mes] = [];
-
-      meses[m.mes].push(Number(m.peso));
+      labels.push(m.mes);
+      dataPeso.push(m.peso);
 
     });
 
   });
-
-
-  for(let mes in meses){
-
-    labels.push(mes);
-
-    const suma = meses[mes].reduce((a,b)=>a+b,0);
-
-    promedios.push((suma/meses[mes].length).toFixed(1));
-
-  }
 
 
   new Chart(document.getElementById("pesoChart"),{
@@ -270,23 +251,13 @@ function cargarDashboard(){
     type:"line",
 
     data:{
-
       labels,
-
       datasets:[{
-
-        label:"Peso promedio",
-
-        data:promedios,
-
-        tension:0.4,
-
-        fill:true,
-
-        borderWidth:2
-
+        label:"Peso",
+        data:dataPeso,
+        borderWidth:2,
+        tension:0.4
       }]
-
     }
 
   });
@@ -299,19 +270,11 @@ function cargarDashboard(){
     type:"bar",
 
     data:{
-
-      labels: usuarios.map(u=>u.nombre),
-
+      labels:clientes.map(u=>u.nombre),
       datasets:[{
-
-        label:"Días de racha",
-
-        data: usuarios.map(u=>u.racha?.dias || 0),
-
-        borderWidth:1
-
+        label:"Racha",
+        data:clientes.map(u=>u.racha?.dias||0)
       }]
-
     }
 
   });
@@ -319,12 +282,25 @@ function cargarDashboard(){
 }
 
 
-/* INICIAR */
-<script src="js/auth.js"></script>
+/**********************
+LOGOUT
+**********************/
+async function logout(){
 
-<script>
-verificarSesion();
+  await window.supabaseClient.auth.signOut();
+
+  location.href="login.html";
+
+}
+
+
+/**********************
+INICIAR
+**********************/
+verificarSesionDashboard();
+
 </script>
+
 
 </body>
 </html>
