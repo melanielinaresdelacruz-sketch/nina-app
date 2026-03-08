@@ -28,3 +28,4 @@ if (typeof window.supabase === "undefined") {
   console.log("✅ SUPABASE CLIENT OK");
 
 }
+//rebuild vercel
