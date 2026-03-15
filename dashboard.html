@@ -9,17 +9,8 @@
 
 <!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = "https://usugqvmyfrxvevnizody.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzdWdxdm15ZnJ4dmV2bml6b2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMjc5NDYsImV4cCI6MjA4NzgwMzk0Nn0.XZDxzEPnYsbeQ_BlM6DzBSMy39_VPxrxwGHoMSAy-Eg";
-
-window.supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-console.log("SUPABASE CLIENT OK");
-</script>
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
 
 <style>
 body{
@@ -137,9 +128,6 @@ canvas{
 
 </div>
 
-
-<script src="js/auth.js"></script>
-
 <script>
 
 /**********************
@@ -215,7 +203,6 @@ function cargarDashboard(){
   document.getElementById("activosHoy").textContent=activosHoy;
 
 
-  /* LISTA */
   const lista=document.getElementById("listaClientes");
   lista.innerHTML="";
 
@@ -228,7 +215,6 @@ function cargarDashboard(){
   });
 
 
-  /* GRAFICA PESO */
   const labels=[];
   const dataPeso=[];
 
@@ -262,8 +248,6 @@ function cargarDashboard(){
 
   });
 
-
-  /* GRAFICA RACHAS */
 
   new Chart(document.getElementById("rachaChart"),{
 
@@ -300,7 +284,6 @@ INICIAR
 verificarSesionDashboard();
 
 </script>
-
 
 </body>
 </html>
